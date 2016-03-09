@@ -8,7 +8,7 @@ class Route
 
   # checks if pattern matches path and method matches request method
   def matches?(req)
-    req.path &&
+    pattern =~ req.path &&
     (http_method == req.request_method.downcase.to_sym)
   end
 
@@ -17,7 +17,11 @@ class Route
   def run(req, res)
     match_data = pattern.match(req.path)
 
-    controller = controller_class.new(req, res)
+    route_params = match_data.names.each_with_object({}) do |path, params|
+      params[path] = match_data[path]
+    end
+
+    controller = controller_class.new(req, res, route_params)
     controller.invoke_action(action_name)
   end
 end
@@ -59,6 +63,11 @@ class Router
   # either throw 404 or call run on a matched route
   def run(req, res)
     route = match(req)
-    route ? route.run(req, res) : res.status = 404
+    if route
+       route.run(req, res)
+    else
+       res.status = 404
+       res.write("These are not the droids you're looking for")
+     end
   end
 end
