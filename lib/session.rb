@@ -2,7 +2,7 @@ require 'json'
 
 
 class Session
-  APP = '_rails_lite_app'
+  APP = '_geralf'
   def initialize(req)
     @store = (req.cookies[APP] ? JSON.parse(req.cookies[APP]) : {})
   end
