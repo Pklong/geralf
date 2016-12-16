@@ -1,8 +1,7 @@
 require 'json'
 
-
 class Session
-  APP = '_geralf'
+  APP = '_geralf'.freeze
   def initialize(req)
     @store = (req.cookies[APP] ? JSON.parse(req.cookies[APP]) : {})
   end
@@ -16,8 +15,7 @@ class Session
   end
 
   def store_session(res)
-
-    @store[:path] = "/"
+    @store[:path] = '/'
     res.set_cookie(APP, @store.to_json)
   end
 end

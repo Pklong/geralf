@@ -14,15 +14,15 @@ class ControllerBase
   end
 
   def already_built_response?
-    !!@already_built_response
+    !@already_built_response.nil?
   end
 
   def redirect_to(url)
     raise if already_built_response?
+    @already_built_response = true
 
     res['location'] = url
     res.status = 302
-    @already_built_response = true
     session.store_session(res)
 
     res.finish
@@ -30,23 +30,22 @@ class ControllerBase
 
   def render_content(content, content_type)
     raise if already_built_response?
+    @already_built_response = true
 
     res['Content-Type'] = content_type
     res.write(content)
-    @already_built_response = true
     session.store_session(res)
     res.finish
   end
 
   def render(template_name)
     raw_template = File.read(
-      "views/" +
-      "#{self.class}".underscore +
+      'views/' + self.class.to_s.underscore +
       "/#{template_name}.html.erb"
-      )
+    )
     template = ERB.new(raw_template).result(binding)
 
-    render_content(template, "text/html")
+    render_content(template, 'text/html')
   end
 
   def session
@@ -54,7 +53,7 @@ class ControllerBase
   end
 
   def invoke_action(name)
-    self.send(name)
+    send(name)
     render(name) unless @already_built_response
   end
 end

@@ -7,8 +7,7 @@ class Route
   end
 
   def matches?(req)
-    pattern =~ req.path &&
-    (http_method == req.request_method.downcase.to_sym)
+    pattern =~ req.path && (http_method == req.request_method.downcase.to_sym)
   end
 
   def run(req, res)
@@ -35,7 +34,7 @@ class Router
   end
 
   def draw(&proc)
-    self.instance_eval(&proc)
+    instance_eval(&proc)
   end
 
   [:get, :post, :put, :delete].each do |http_method|
@@ -45,7 +44,7 @@ class Router
   end
 
   def match(req)
-    @routes.each do |route|
+    routes.each do |route|
       return route if route.matches?(req)
     end
     nil
@@ -54,10 +53,10 @@ class Router
   def run(req, res)
     route = match(req)
     if route
-       route.run(req, res)
+      route.run(req, res)
     else
-       res.status = 404
-       res.write("These are not the droids you're looking for")
-     end
+      res.status = 404
+      res.write("These are not the droids you're looking for")
+    end
   end
 end
